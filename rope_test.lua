@@ -99,14 +99,14 @@ function test_report()
     lu.assertEquals(r:report(1, 1), "F")
     lu.assertEquals(r:report(3, 3), "o")
     lu.assertEquals(r:report(5, 5), "b")
-    
+
     local r = Rope.new("Hello")
     r:append(", ")
     r:append("world!")
     lu.assertEquals(r:report(1, 13), "Hello, world!")
     lu.assertEquals(r:report(3, 10), "llo, wor")
     lu.assertEquals(r:report(5, 5), "o")
-    
+
     local r = Rope.new("int main() {\n")
     r:append("public static void main() {\n")
     r:append("}}\n")

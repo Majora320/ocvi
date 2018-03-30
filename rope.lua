@@ -42,21 +42,21 @@ end
 
 function RopeNode:sum_weights()
     local sum = #self.string
-    
+
     if sum == 0 then
         if self.left.right then
             sum = sum + self.left.weight + self.left.right:sum_weights()
         else
             sum = sum + self.left.weight
         end
-        
+
         if self.right.right then
             sum = sum + self.right.weight + self.right.right:sum_weights()
         else
             sum = sum + self.right.weight
         end
     end
-    
+
     return sum
 end
 
@@ -130,14 +130,14 @@ function Rope:split(i)
 
         detatched_nodes[#detatched_nodes+1] = RopeNode.new(node.string:sub(i + 1))
         sub_weight = detatched_nodes[1].weight
-        
+
         node.string = left.string
         node.weight = left.weight
     end
 
     local last = node
     node = node.parent
-    
+
     while node do
         if node.left == last then
             local detatch = node.right
@@ -148,14 +148,14 @@ function Rope:split(i)
             node.left = last.left
             node.right = last.right
 
-            
+
             if node.string == "" then -- non-leaf node
                 --node.weight = node.weight - sub_weight
                 -- TODO: optimize this if possible
                 node.weight = node.left:sum_weights()
             end
         end
-		
+
         last = node
         node = node.parent
     end
@@ -171,7 +171,7 @@ function Rope:split(i)
             )
         end
     end
-    
+
     if #detatched_nodes == 0 then
         return Rope.new("")
     else
@@ -214,7 +214,7 @@ function Rope:report_until(start, term)
     local node, i = self:get_node_and_index(start)
     local current_index = 1
     local res = ""
-    
+
     local function process_node(node, start)
         start = start or 1
         for i = start, #node.string do
@@ -225,14 +225,14 @@ function Rope:report_until(start, term)
             end
             current_index = current_index + 1
         end
-        
+
         return false
     end
-    
+
     if process_node(node, i) then
         return res
     end
-    
+
     local function traverse_in_order(node)
         if node.string ~= "" then
             if process_node(node) then
@@ -246,10 +246,10 @@ function Rope:report_until(start, term)
                 return true
             end
         end
-        
+
         return false
     end
-    
+
     -- Remarkably similar to the loop in split()
     -- Maybe extract these out into functions...?
     local last = node
@@ -260,11 +260,11 @@ function Rope:report_until(start, term)
                 return res
             end
         end
-        
+
         last = node
         node = node.parent
     end
-    
+
     return res
 end
 
