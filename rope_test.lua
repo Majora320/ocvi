@@ -21,8 +21,8 @@ function test_split()
     local t = r:split(2)
     ensure_equal(r, "Te")
     ensure_equal(t, "st")
-    
-    
+
+
     local r = Rope.new("test")
     r:append("ing")
 
@@ -39,7 +39,7 @@ function test_split()
     local t = r:split(6)
     ensure_equal(r, "Hello ")
     ensure_equal(t, "world!")
-    
+
     local r1 = Rope.new("Hello,")
     r1:append(" world!")
     local r2 = Rope.new(" Test ")
@@ -47,12 +47,12 @@ function test_split()
     local r = Rope.concat(r1, r2)
 
     ensure_equal(r, "Hello, world! Test String")
-    
+
     local t = r:split(15)
 
     ensure_equal(r, "Hello, world! T")
     ensure_equal(t, "est String")
-    
+
     local r = Rope.new("FOO")
     local t = r:split(3)
     ensure_equal(r, "FOO")
@@ -63,11 +63,11 @@ function test_insert()
     local r = Rope.new("OOBAR2000")
     r:insert(0, "F")
     ensure_equal(r, "FOOBAR2000")
-    
+
     local r = Rope.new("FOOBAR")
     r:insert(6, "2000")
     ensure_equal(r, "FOOBAR2000")
-    
+
     local r = Rope.new("Hello world")
     r:insert(5, ",")
     r:insert(12, "!")
@@ -91,6 +91,29 @@ function test_delete()
     ensure_equal(r, "helloworld")
 end
 
+function test_report()
+    local r = Rope.new("Florb")
+    lu.assertEquals(r:report(1, 5), "Florb")
+    lu.assertEquals(r:report(2, 5), "lorb")
+    lu.assertEquals(r:report(3, 4), "or")
+    lu.assertEquals(r:report(1, 1), "F")
+    lu.assertEquals(r:report(3, 3), "o")
+    lu.assertEquals(r:report(5, 5), "b")
+    
+    local r = Rope.new("Hello")
+    r:append(", ")
+    r:append("world!")
+    lu.assertEquals(r:report(1, 13), "Hello, world!")
+    lu.assertEquals(r:report(3, 10), "llo, wor")
+    lu.assertEquals(r:report(5, 5), "o")
+    
+    local r = Rope.new("int main() {\n")
+    r:append("public static void main() {\n")
+    r:append("}}\n")
+    lu.assertEquals(r:report_until(1, function(i, s) return s:sub(i, i) == "\n" end), "int main() {")
+    lu.assertEquals(r:report_until(21, function(i, s) return s:sub(i, i) == "\n" end), "static void main() {")
+end
+
 function ensure_equal(r, expected)
     local maxi
 
@@ -104,7 +127,7 @@ end
 
 function print_weights(t, indent)
     if t.root ~= nil then t = t.root end
-    
+
     if indent == nil then
         indent = 0
     end

@@ -42,23 +42,21 @@ end
 
 function RopeNode:sum_weights()
     local sum = #self.string
-
-    if self.left then
+    
+    if sum == 0 then
         if self.left.right then
             sum = sum + self.left.weight + self.left.right:sum_weights()
         else
             sum = sum + self.left.weight
         end
-    end
-
-    if self.right then
+        
         if self.right.right then
             sum = sum + self.right.weight + self.right.right:sum_weights()
         else
             sum = sum + self.right.weight
         end
     end
-
+    
     return sum
 end
 
@@ -208,19 +206,70 @@ function Rope:delete(i, j)
     end
 end
 
--- Term is a function that takes two parameters: The current index, and the full reported string (it can find the most
--- recent character by just doing `s.sub(i, i)`). The returned string excludes the last element (e.g. the one that was
--- added on the round that `term` returned false)
+-- `term` is a function that takes two parameters: The current index, and the
+-- full reported string (it can find the most recent character by just doing
+-- `s.sub(i, i)`). The returned string excludes the last element (e.g. the one
+-- that was added on the round that `term` returned true)
 function Rope:report_until(start, term)
-    local node, _ = self:get_node_and_index(start)
+    local node, i = self:get_node_and_index(start)
     local current_index = 1
     local res = ""
-
-    -- TODO: in-order traversal from `node`
+    
+    local function process_node(node, start)
+        start = start or 1
+        for i = start, #node.string do
+            res = res .. node.string:sub(i, i)
+            if term(current_index, res) then
+                res = res:sub(1, #res - 1)
+                return true
+            end
+            current_index = current_index + 1
+        end
+        
+        return false
+    end
+    
+    if process_node(node, i) then
+        return res
+    end
+    
+    local function traverse_in_order(node)
+        if node.string ~= "" then
+            if process_node(node) then
+                return true
+            end
+        else
+            if traverse_in_order(left) then
+                return true
+            end
+            if traverse_in_order(right) then
+                return true
+            end
+        end
+        
+        return false
+    end
+    
+    -- Remarkably similar to the loop in split()
+    -- Maybe extract these out into functions...?
+    local last = node
+    local node = node.parent
+    while node ~= nil do
+        if node.left == last then
+            if traverse_in_order(node.right) then
+                return res
+            end
+        end
+        
+        last = node
+        node = node.parent
+    end
+    
+    return res
 end
 
 function Rope:report(start, end_)
-    return Rope:report_until(start, function(i, _) return i == end_ end)
+    return self:report_until(start, function(i, _) return i == (end_ - start + 2) end)
 end
 
 return { Rope = Rope, RopeNode = RopeNode }
