@@ -138,7 +138,7 @@ function Rope:split(i)
     local last = node
     node = node.parent
     
-    while node ~= nil do
+    while node do
         if node.left == last then
             local detatch = node.right
             detatched_nodes[#detatched_nodes+1] = detatch
@@ -254,7 +254,7 @@ function Rope:report_until(start, term)
     -- Maybe extract these out into functions...?
     local last = node
     local node = node.parent
-    while node ~= nil do
+    while node do
         if node.left == last then
             if traverse_in_order(node.right) then
                 return res
