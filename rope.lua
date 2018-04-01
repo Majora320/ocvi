@@ -116,6 +116,10 @@ function Rope.concat(left, right)
 end
 
 function Rope:append(s)
+    if s == "" then
+        return
+    end
+
     self.root = RopeNode.concat(self.root, RopeNode.new(s))
 end
 
@@ -182,6 +186,10 @@ function Rope:split(i)
 end
 
 function Rope:insert(i, s)
+    if s == "" then
+        return
+    end
+
     if i == 0 then
         self.root = RopeNode.concat(RopeNode.new(s), self.root)
     elseif i == #self then

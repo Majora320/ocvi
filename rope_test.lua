@@ -72,6 +72,10 @@ function test_insert()
     r:insert(5, ",")
     r:insert(12, "!")
     ensure_equal(r, "Hello, world!")
+
+    local r = Rope.new("Flrb")
+    r:insert(3, "")
+    ensure_equal(r, "Flrb")
 end
 
 function test_delete()
