@@ -57,6 +57,11 @@ function test_split()
     local t = r:split(3)
     ensure_equal(r, "FOO")
     ensure_equal(t, "")
+    
+    local r = Rope.new("")
+    local t = r:split(0)
+    ensure_equal(r, "")
+    ensure_equal(t, "")
 end
 
 function test_insert()
